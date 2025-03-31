@@ -1,12 +1,14 @@
 import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
-from openai import OpenAI
-import toml
-# دریافت کلید API از secrets
+import openai
+
+# کلید API
 metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
 if not metis_api_key:
     st.error("API Key یافت نشد. لطفاً آن را در secrets.toml تنظیم کنید.")
+
+# استایل برای نمایش راست‌چین
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
@@ -19,40 +21,49 @@ span, p, a, button, ol, li { text-align: right; font-family: 'DM Sans', sans-ser
 </style>
 """, unsafe_allow_html=True)
 
-st.title('pdf مترجم')
+st.title('📄 مترجم PDF (صفحه به صفحه)')
 
-uploaded_file = st.file_uploader("فایل PDF خودتون رو آپلود کنید", type="pdf")
-bt = st.button('Translate')
+# آپلود فایل
+uploaded_file = st.file_uploader("فایل PDF خود را آپلود کنید:", type="pdf")
+bt = st.button('📌 شروع ترجمه')
 
 if uploaded_file and bt:
     pdfdocument = fitz.open(stream=uploaded_file.read(), filetype='pdf')
-    full_text = ""
-    for page_num in range(len(pdfdocument)):
+    translated_pages = []  # ذخیره ترجمه‌ها برای دانلود
+
+    for page_num in range(len(pdfdocument)):  # پردازش هر صفحه جداگانه
         page = pdfdocument[page_num]
-        text = page.get_text("text")
-        full_text += text + "\n"
-        st.text_area("متن استخراج‌شده:", full_text)
-if bt:
-        client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "translate all texts into fluent persian"},
-                {"role": "user", "content": text}
-            ],
-            max_tokens=1000  # تنظیم تعداد توکن‌های مورد نیاز
-        )
+        text = page.get_text('text')
 
-        if response and hasattr(response, "choices") and response.choices:
-            translated_text = response.choices[0].message.content
-        else:
-            translated_text = "خطایی در دریافت ترجمه رخ داده است."
+        if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
+            client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
+                    {"role": "user", "content": text}
+                ],
+                max_tokens=4000
+            )
 
-        st.markdown(translated_text)
+            if response and hasattr(response, "choices") and response.choices:
+                translated_text = response.choices[0].message.content
+                translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
+            else:
+                translated_text = "⚠ خطا در دریافت ترجمه."
 
+            # نمایش ترجمه هر صفحه جداگانه
+            st.subheader(f"📜 صفحه {page_num + 1}")
+            st.text_area(f"🔍 متن اصلی (صفحه {page_num + 1})", text, height=150, key=f"original_{page_num}")
+            st.text_area(f"✅ ترجمه (صفحه {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
+            st.divider()  # ایجاد فاصله بین صفحات
+
+    # **دانلود کل ترجمه به عنوان یک فایل**
+    if translated_pages:
+        final_translation = "\n\n".join(translated_pages)
         st.download_button(
-            label="دانلود ترجمه",
-            data=BytesIO(translated_text.encode("utf-8")),
-            file_name="translated.txt",
+            label="📥 دانلود ترجمه کامل",
+            data=BytesIO(final_translation.encode("utf-8")),
+            file_name="translated.pdf",
             mime="text/plain"
         )
