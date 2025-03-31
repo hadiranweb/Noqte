@@ -1,7 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
-import openai
+from openai import OpenAI
 
 # کلید API
 metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
