@@ -37,9 +37,10 @@ if uploaded_file and bt:
         text = page.get_text('text')
 
         if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
-            client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/api/v1/wrapper/openai_chat_completion")
+            client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key="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",)
+
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="deepseek/deepseek-v3-base:free",
                 messages=[
                     {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
                     {"role": "user", "content": text}
