@@ -41,7 +41,7 @@ if uploaded_file and bt:
 
         if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
             payload = {
-                "model": "deepseek/deepseek-v3-base:free",
+                "model": "mistral/ministral-8b",
                 "messages": [
                     {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
                     {"role": "user", "content": text}
