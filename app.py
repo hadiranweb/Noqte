@@ -37,7 +37,7 @@ if uploaded_file and bt:
                 {"role": "system", "content": "translate all texts into fluent persian"},
                 {"role": "user", "content": text}
             ],
-            max_tokens=4000  # تنظیم تعداد توکن‌های مورد نیاز
+            max_tokens=1000  # تنظیم تعداد توکن‌های مورد نیاز
         )
 
         if response and hasattr(response, "choices") and response.choices:
