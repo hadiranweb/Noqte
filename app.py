@@ -4,11 +4,9 @@ import fitz  # PyMuPDF
 import openai
 import toml
 # دریافت کلید API از secrets
-metis_api_key = st.secrets.get("openai", {}).get("api_key", None)
+metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
 if not metis_api_key:
     st.error("API Key یافت نشد. لطفاً آن را در secrets.toml تنظیم کنید.")
-    st.stop()
-
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
