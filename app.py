@@ -2,7 +2,7 @@ import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
 import openai
-
+import toml
 # دریافت کلید API از secrets
 metis_api_key = st.secrets.get("openai", {}).get("api_key", None)
 if not metis_api_key:
