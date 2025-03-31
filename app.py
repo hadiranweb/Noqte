@@ -41,9 +41,15 @@ if uploaded_file and bt:
                 {"role": "system", "content": "translate all texts into fluent persian"},
                 {"role": "user", "content": text}
             ],
-            max_tokens=15000  # تنظیم تعداد توکن‌های مورد نیاز
+            max_tokens=4000  # تنظیم تعداد توکن‌های مورد نیاز
         )
 
-        translated_text = response['choices'][0]['message']['content']
+        translated_text = response.choices[0].message.content
         st.markdown(translated_text)
-        st.download_button("دانلود ترجمه", translated_text, file_name="translated.txt")
+        
+        st.download_button(
+            label="دانلود ترجمه",
+            data=BytesIO(translated_text.encode("utf-8")),
+            file_name="translated.txt",
+            mime="text/plain"
+        )
