@@ -4,7 +4,7 @@ import fitz  # PyMuPDF
 import openai
 import toml
 # دریافت کلید API از secrets
-metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
+metis_api_key = "qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
 if not metis_api_key:
     st.error("API Key یافت نشد. لطفاً آن را در secrets.toml تنظیم کنید.")
 st.markdown("""
