@@ -4,7 +4,7 @@ import fitz # PyMuPDF
 import openai
 
 # کلید API خود را اینجا وارد کنید
-metis_api_key = '7224f3e6-a27d-457b-b6c1-71498dff14fa'
+metis_api_key = 'tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS'
 
 st.markdown("""
 <style>
