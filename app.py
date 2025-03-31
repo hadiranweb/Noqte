@@ -26,6 +26,7 @@ bt = st.button('Translate')
 
 if uploaded_file and bt:
     pdfdocument = fitz.open(stream=uploaded_file.read(), filetype='pdf')
+    full_text = ""
     for page_num in range(len(pdfdocument)):
         page = pdfdocument[page_num]
         text = page.get_text("text")
