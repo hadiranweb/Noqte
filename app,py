@@ -48,3 +48,5 @@ if uploaded-file and bt:
         )
 
         st.markdown(completion.choices[0].massages.content)
+translated_text = completion.choices[0].message.content
+st.download_button("دانلود ترجمه", translated_text, file_name="translated.txt")
