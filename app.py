@@ -34,7 +34,7 @@ if uploaded_file and bt:
         text = page.get_text('text')
         
         # ایجاد درخواست به OpenAI API
-        client = openai.OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+        client = openai.OpenAI(api_key=tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS, base_url="https://api.metisai.ir/openai/v1")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
