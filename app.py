@@ -1,17 +1,18 @@
 import streamlit as st
+import requests
+import json
 from io import BytesIO
 import fitz  # PyMuPDF
-from openai import OpenAI
 import time
 
 # کلید API
-metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
-if not metis_api_key:
-    st.error("API Key یافت نشد. لطفاً آن را در secrets.toml تنظیم کنید.")
+api_key = "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"
+base_url = "https://openrouter.ai/api/v1/chat/completions"
 
+if not api_key:
+    st.error("API Key یافت نشد. لطفاً آن را تنظیم کنید.")
 
-
-# استایل برای نمایش راست‌چین
+# استایل راست‌چین برای نمایش در Streamlit
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
@@ -26,7 +27,7 @@ span, p, a, button, ol, li { text-align: right; font-family: 'DM Sans', sans-ser
 
 st.title('📄 مترجم PDF (صفحه به صفحه)')
 
-# آپلود فایل
+# آپلود فایل PDF
 uploaded_file = st.file_uploader("فایل PDF خود را آپلود کنید:", type="pdf")
 bt = st.button('📌 شروع ترجمه')
 
@@ -39,35 +40,43 @@ if uploaded_file and bt:
         text = page.get_text('text')
 
         if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
-            client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key="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",)
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-v3-base:free",
-                messages=[
+            payload = {
+                "model": "deepseek/deepseek-v3-base:free",
+                "messages": [
                     {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=8000
-            )
+                "max_tokens": 8000
+            }
 
-            if response and hasattr(response, "choices") and response.choices:
-                translated_text = response.choices[0].message.content
-                translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+
+            response = requests.post(base_url, headers=headers, data=json.dumps(payload))
+
+            if response.status_code == 200:
+                result = response.json()
+                translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ خطا در دریافت ترجمه.")
             else:
-                translated_text = "⚠ خطا در دریافت ترجمه."
+                translated_text = "⚠ خطا در ارتباط با سرور."
+
+            translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
 
             # نمایش ترجمه هر صفحه جداگانه
             st.subheader(f"📜 صفحه {page_num + 1}")
             st.text_area(f"🔍 متن اصلی (صفحه {page_num + 1})", text, height=150, key=f"original_{page_num}")
             st.text_area(f"✅ ترجمه (صفحه {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
             st.divider()  # ایجاد فاصله بین صفحات
-            time.sleep(2)  # Add a delay of 2 seconds between each page processing
+            time.sleep(2)  # تاخیر 2 ثانیه‌ای برای جلوگیری از ارسال درخواست‌های زیاد
 
-    # **دانلود کل ترجمه به عنوان یک فایل**
+    # دانلود کل ترجمه به عنوان یک فایل
     if translated_pages:
         final_translation = "\n\n".join(translated_pages)
         st.download_button(
             label="📥 دانلود ترجمه کامل",
             data=BytesIO(final_translation.encode("utf-8")),
-            file_name="translated.pdf",
+            file_name="translated.txt",
             mime="text/plain"
         )
