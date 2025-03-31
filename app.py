@@ -28,10 +28,9 @@ if uploaded-file and bt:
     pdfdocument = fitz.open(stream= uploaded_file.read() , filetype='pdf')
     for page_num in range(len(pdfdocument)):
         page = pdfdocument[page-num]
-        text = (page.get_text('text'))
-        client = InferenceClient(
-            model = "",
-            api_key=''
+        text = (page.get_text('text')
+client = OpenAI(api_key = metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+            model = "gpt-4o",
         )
         msg = [
          {
@@ -47,6 +46,8 @@ if uploaded-file and bt:
             messages=msg,
         )
 
-        st.markdown(completion.choices[0].massages.content)
+
+
+  st.markdown(completion.choices[0].massages.content)
 translated_text = completion.choices[0].message.content
 st.download_button("دانلود ترجمه", translated_text, file_name="translated.txt")
