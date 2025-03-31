@@ -1,13 +1,16 @@
 import streamlit as st
 from io import BytesIO
 import fitz # PyMuPDF
-from openai import OpenAI
-from hugginface_hub import InferenceClient
+import openai
+
+# کلید API خود را اینجا وارد کنید
+metis_api_key = 'YOUR_API_KEY'
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500&family=Noto+Sans+Arabic:wght@500&display=swap'):
 html{direction: rtl}
-.st-emotion-cache-1fttcpj , .st-emotion-cache-nwtri{disply:none;}
+.st-emotion-cache-1fttcpj , .st-emotion-cache-nwtri{display:none;}
 .st-emotion-cache-5rimss p{text-align:right;font-family: 'DM sans', sans-serif;
 font-family: 'Noto Sans Arabic', sans-serif;"
 }
@@ -21,33 +24,26 @@ font-family: 'Noto Sans Arabic', sans-sarif;
 
 st.title('pdf مترجم')
 
-uploaded-file = st.file-uploader(" فایل PDF خودتون رو آپلود کنید", type="pdf")
+uploaded_file = st.file_uploader(" فایل PDF خودتون رو آپلود کنید", type="pdf")
 bt = st.button('Translate')
-if uploaded-file and bt:
-    pdfdocument = fitz and bt:
-    pdfdocument = fitz.open(stream= uploaded_file.read() , filetype='pdf')
+
+if uploaded_file and bt:
+    pdfdocument = fitz.open(stream=uploaded_file.read(), filetype='pdf')
     for page_num in range(len(pdfdocument)):
-        page = pdfdocument[page-num]
-        text = (page.get_text('text')
-client = OpenAI(api_key = metis_api_key, base_url="https://api.metisai.ir/openai/v1")
-            model = "gpt-4o",
-        )
-        msg = [
-         {
-                'role' : 'system',
-                'content': 'translate all texts into fluent persian'
-         },
-         {
-                 'role' : 'user'
-                 'content': text
-         }
-        ]
-        completion = client.chat.completions.create(
-            messages=msg,
+        page = pdfdocument[page_num]
+        text = page.get_text('text')
+        
+        # ایجاد درخواست به OpenAI API
+        client = openai.OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "translate all texts into fluent persian"},
+                {"role": "user", "content": text}
+            ],
+            max_tokens=15000  # تنظیم تعداد توکن‌های مورد نیاز
         )
 
-
-
-  st.markdown(completion.choices[0].massages.content)
-translated_text = completion.choices[0].message.content
-st.download_button("دانلود ترجمه", translated_text, file_name="translated.txt")
+        translated_text = response['choices'][0]['message']['content']
+        st.markdown(translated_text)
+        st.download_button("دانلود ترجمه", translated_text, file_name="translated.txt")
