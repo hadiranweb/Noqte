@@ -1,11 +1,10 @@
 import streamlit as st
 from io import BytesIO
-import fitz # PyMuPDF
+import fitz  # PyMuPDF
 import openai
 
-# کلید API خود را اینجا وارد کنید
-metis_api_key = 'qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS'
-
+# دریافت کلید API از secrets
+metis_api_key = st.secrets["openai"]["api_key"]
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500&family=Noto+Sans+Arabic:wght@500&display=swap'):
@@ -32,9 +31,7 @@ if uploaded_file and bt:
     for page_num in range(len(pdfdocument)):
         page = pdfdocument[page_num]
         text = page.get_text('text')
-        
-        # ایجاد درخواست به OpenAI API
-        client = openai.OpenAI(api_key=qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS, base_url="https://api.metisai.ir/openai/v1")
+        client = openai.OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
