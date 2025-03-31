@@ -31,7 +31,7 @@ if uploaded_file and bt:
         page = pdfdocument[page_num]
         text = page.get_text("text")
         full_text += text + "\n"
-        st.text_area("متن استخراج‌شده:", full_text, key="extracted_text")
+        st.text_area("متن استخراج‌شده:", full_text, key="pdf_extracted_text")
 if bt:
         client = openai.openai(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
         response = client.chat.completions.create(
