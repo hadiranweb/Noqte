@@ -2,6 +2,7 @@ import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
 from openai import OpenAI
+import time  # Add this import for adding delays
 
 # کلید API
 metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
@@ -43,7 +44,7 @@ if uploaded_file and bt:
                     {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=4000
+                max_tokens=1000
             )
 
             if response and hasattr(response, "choices") and response.choices:
@@ -57,6 +58,7 @@ if uploaded_file and bt:
             st.text_area(f"🔍 متن اصلی (صفحه {page_num + 1})", text, height=150, key=f"original_{page_num}")
             st.text_area(f"✅ ترجمه (صفحه {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
             st.divider()  # ایجاد فاصله بین صفحات
+            time.sleep(2)  # Add a delay of 2 seconds between each page processing
 
     # **دانلود کل ترجمه به عنوان یک فایل**
     if translated_pages:
