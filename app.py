@@ -2,12 +2,14 @@ import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
 from openai import OpenAI
-import time  # Add this import for adding delays
+import time
 
 # کلید API
 metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
 if not metis_api_key:
     st.error("API Key یافت نشد. لطفاً آن را در secrets.toml تنظیم کنید.")
+
+
 
 # استایل برای نمایش راست‌چین
 st.markdown("""
@@ -38,7 +40,6 @@ if uploaded_file and bt:
 
         if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
             client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key="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",)
-
             response = client.chat.completions.create(
                 model="deepseek/deepseek-v3-base:free",
                 messages=[
