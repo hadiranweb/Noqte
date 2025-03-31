@@ -37,7 +37,7 @@ if uploaded_file and bt:
         text = page.get_text('text')
 
         if text.strip():  # اگر صفحه‌ای متن داشت، آن را پردازش کن
-            client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+            client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/api/v1/wrapper/openai_chat_completion")
             response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
