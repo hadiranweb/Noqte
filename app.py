@@ -1,7 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
-import openai
+from openai import OpenAI
 import toml
 # دریافت کلید API از secrets
 metis_api_key = "tpsg-qq0H6FxAHnGmFSDu8e9PPFRvC0NsnNS"
@@ -33,7 +33,7 @@ if uploaded_file and bt:
         full_text += text + "\n"
         st.text_area("متن استخراج‌شده:", full_text)
 if bt:
-        client = openai.openai(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
+        client = OpenAI(api_key=metis_api_key, base_url="https://api.metisai.ir/openai/v1")
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
