@@ -44,7 +44,7 @@ if uploaded_file and bt:
                     {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=1000
+                max_tokens=8000
             )
 
             if response and hasattr(response, "choices") and response.choices:
