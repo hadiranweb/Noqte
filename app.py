@@ -53,7 +53,7 @@ def translate_page(text):
             {"role": "system", "content": "Translate the text into fluent Persian"},
             {"role": "user", "content": text}
         ],
-        "model": "grok",
+        "model": "grok-2-latest",
         "stream": False,
         "temperature": 0
     }
