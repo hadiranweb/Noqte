@@ -6,24 +6,26 @@ import fitz  # PyMuPDF
 import time
 import os
 from dotenv import load_dotenv
-load_dotenv()
 import subprocess
 import sys
 
-# نصب خودکار کتابخانه‌ها
+# Load environment variables
+load_dotenv()
+
+# Auto-install required libraries
 required_libraries = ["streamlit", "requests", "pymupdf", "python-dotenv"]
 for library in required_libraries:
     subprocess.check_call([sys.executable, "-m", "pip", "install", library])
 
-# دریافت کلید API از متغیرهای محیطی
+# Get API key from environment variables
 api_key = os.getenv("METIS_API_KEY")
-base_url = "https://api.metisai.ir/api/v1/wrapper/openai_chat_completion/chat/completions"
+base_url = "https://api.x.ai/v1/chat/completions"  # Adjusted to match cURL endpoint
 
 if not api_key:
-    st.error("کلید API یافت نشد. لطفاً آن را در متغیرهای محیطی با نام 'OPENROUTER_API_KEY' تنظیم کنید.")
+    st.error("API key not found. Please set it in environment variables as 'METIS_API_KEY'.")
     st.stop()
 
-# استایل راست‌چین برای رابط کاربری
+# RTL styling for UI
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
@@ -36,43 +38,42 @@ span, p, a, button, ol, li { text-align: right; font-family: 'DM Sans', sans-ser
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📄 مترجم PDF (صفحه به صفحه)")
+st.title("📄 PDF Translator (Page by Page)")
 
-# آپلود فایل PDF
-uploaded_file = st.file_uploader("فایل PDF خود را آپلود کنید:", type="pdf")
-bt = st.button("📌 شروع ترجمه")
+# File uploader for PDF
+uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
+bt = st.button("📌 Start Translation")
 
-def extract_text_from_page(page):
-    """استخراج متن از یک صفحه PDF"""
-    return page.get_text("text").strip()
-
-def translate_text(text, api_key, base_url):
-    """ارسال درخواست ترجمه به API با ساختار مشابه cURL"""
-    payload = {
-        "model": "gpt-3.5-turbo-0125",  # مدل مورد استفاده
+def translate_page(text):
+    """Translate text using API, matching the cURL template structure"""
+    url = base_url
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"  # Matches -H "Authorization: Bearer ..."
+    }
+    data = {
         "messages": [
             {
                 "role": "system",
-                "content": "متن را به فارسی روان ترجمه کن"
+                "content": "Translate the text into fluent Persian"
             },
             {
                 "role": "user",
                 "content": text
             }
         ],
-        "max_tokens": 8000
+        "model": "grok-2-latest",  # Matches the cURL model
+        "stream": False,           # Matches "stream": false
+        "temperature": 0           # Matches "temperature": 0
     }
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"  # مشابه Authorization در cURL
-    }
+
     try:
-        response = requests.post(base_url, headers=headers, data=json.dumps(payload))
+        response = requests.post(url, headers=headers, data=json.dumps(data))
         response.raise_for_status()
         result = response.json()
-        translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ خطا در دریافت ترجمه.")
+        translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
     except requests.exceptions.RequestException as e:
-        translated_text = f"⚠ خطا در ارتباط با سرور: {str(e)}"
+        translated_text = f"⚠ Server connection error: {str(e)}"
     return translated_text
 
 if uploaded_file and bt:
@@ -80,39 +81,39 @@ if uploaded_file and bt:
     total_pages = len(pdf_document)
     translated_pages = []
 
-    # نمایش نوار پیشرفت و وضعیت
+    # Progress bar and status
     progress_bar = st.progress(0)
     status_text = st.empty()
 
     for page_num in range(total_pages):
-        status_text.text(f"در حال پردازش صفحه {page_num + 1} از {total_pages}...")
+        status_text.text(f"Processing page {page_num + 1} of {total_pages}...")
         page = pdf_document[page_num]
-        text = extract_text_from_page(page)
+        text = page.get_text("text").strip()
 
-        if text:  # فقط صفحاتی که متن دارند پردازش شوند
-            translated_text = translate_text(text, api_key, base_url)
-            translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
+        if text:  # Process only pages with text
+            translated_text = translate_page(text)
+            translated_pages.append(f"📄 **Page {page_num + 1}:**\n\n{translated_text}")
 
-            # نمایش متن اصلی و ترجمه
-            st.subheader(f"📜 صفحه {page_num + 1}")
-            st.text_area(f"🔍 متن اصلی (صفحه {page_num + 1})", text, height=150, key=f"original_{page_num}")
-            st.text_area(f"✅ ترجمه (صفحه {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
+            # Display original and translated text
+            st.subheader(f"📜 Page {page_num + 1}")
+            st.text_area(f"🔍 Original Text (Page {page_num + 1})", text, height=150, key=f"original_{page_num}")
+            st.text_area(f"✅ Translation (Page {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
             st.divider()
 
-            # به‌روزرسانی نوار پیشرفت
+            # Update progress bar
             progress_bar.progress((page_num + 1) / total_pages)
-            time.sleep(2)  # تاخیر برای جلوگیری از فشار به API
+            time.sleep(2)  # Delay to avoid API overload
 
-    status_text.text("ترجمه تکمیل شد!")
+    status_text.text("Translation completed!")
 
-    # امکان دانلود ترجمه کامل
+    # Download full translation
     if translated_pages:
         final_translation = "\n\n".join(translated_pages)
         st.download_button(
-            label="📥 دانلود ترجمه کامل",
+            label="📥 Download Full Translation",
             data=BytesIO(final_translation.encode("utf-8")),
             file_name="translated.txt",
             mime="text/plain"
         )
 
-    pdf_document.close()  # آزادسازی حافظه
+    pdf_document.close()  # Free memory
