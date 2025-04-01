@@ -30,9 +30,9 @@ span, p, a, button, ol, li { text-align: right; font-family: 'DM Sans', sans-ser
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📄 PDF Translator (Page by Page)")
-uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
-bt = st.button("📌 Start Translation")
+st.title("📄 PDF Translator (Page by Page) by HadiranWeb")
+uploaded_file = st.file_uploader("فایل پی‌دی‌اف خودتون رو آپلود کنید:", type="pdf")
+bt = st.button("📌 شروع ترجمه دقیق")
 
 def translate_page(text):
     try:
