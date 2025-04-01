@@ -84,33 +84,35 @@ except requests.exceptions.RequestException as e:
  return translated_text
 
 if uploaded_file and bt:
- pdf_document = fitz.open(stream=uploaded_file.read(), filetype="pdf")
- total_pages = len(pdf_document)
- translated_pages = []
- progress_bar = st.progress(0)
- status_text = st.empty()
+    with fitz.open(stream=uploaded_file.read(), filetype="pdf") as pdf_document:
+        total_pages = len(pdf_document)
+        translated_pages = []
+        progress_bar = st.progress(0)
+        status_text = st.empty()
 
- for page_num in range(total_pages):
- status_text.text(f"Processing page {page_num + 1} of {total_pages}...")
- page = pdf_document[page_num]
- text = page.get_text("text").strip()
- if text:
- translated_text = translate_page(text)
- translated_pages.append(f"📄 **Page {page_num + 1}:**\n\n{translated_text}")
- st.subheader(f"📜 Page {page_num + 1}")
- st.text_area(f"🔍 Original Text (Page {page_num + 1})", text, height=150, key=f"original_{page_num}")
- st.text_area(f"✅ Translation (Page {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
- st.divider()
- progress_bar.progress((page_num + 1) / total_pages)
- time.sleep(2)
+        for page_num in range(total_pages):
+            status_text.text(f"در حال پردازش صفحه {page_num + 1} از {total_pages}...")
+            page = pdf_document[page_num]
+            text = page.get_text("text").strip()
+            if not text:
+                translated_text = "⚠ این صفحه خالی است."
+            else:
+                translated_text = translate_page(text)
+            translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
+            
+            with st.expander(f"📜 صفحه {page_num + 1}"):
+                st.text_area(f"🔍 متن اصلی (صفحه {page_num + 1})", text, height=150, key=f"original_{page_num}")
+                st.text_area(f"✅ ترجمه (صفحه {page_num + 1})", translated_text, height=150, key=f"translated_{page_num}")
+            
+            progress_bar.progress((page_num + 1) / total_pages)
 
- status_text.text("Translation completed!")
- if translated_pages:
- final_translation = "\n\n".join(translated_pages)
- st.download_button(
- label="📥 Download Full Translation",
- data=BytesIO(final_translation.encode("utf-8")),
- file_name="translated.txt",
- mime="text/plain"
- )
+        status_text.text("ترجمه تکمیل شد!")
+        if translated_pages:
+            final_translation = "\n\n".join(translated_pages)
+            st.download_button(
+                label="📥 دانلود ترجمه کامل",
+                data=BytesIO(final_translation.encode("utf-8")),
+                file_name="translated.txt",
+                mime="text/plain"
+            )
  pdf_document.close()
