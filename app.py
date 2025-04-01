@@ -5,6 +5,8 @@ from io import BytesIO
 import fitz  # PyMuPDF
 import time
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # دریافت کلید API از متغیر محیطی برای امنیت بیشتر
 api_key = os.getenv("OPENROUTER_API_KEY")
