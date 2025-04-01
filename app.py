@@ -10,21 +10,14 @@ load_dotenv()
 import subprocess
 import sys
 
-# لیست کتابخانه‌های مورد نیاز
-required_libraries = [
-    "streamlit",
-    "requests",
-    "pymupdf",
-    "python-dotenv"
-]
-
-# نصب کتابخانه‌ها
+# نصب خودکار کتابخانه‌ها
+required_libraries = ["streamlit", "requests", "pymupdf", "python-dotenv"]
 for library in required_libraries:
     subprocess.check_call([sys.executable, "-m", "pip", "install", library])
 
-# دریافت کلید API از متغیر محیطی برای امنیت بیشتر
-api_key = os.getenv("OPENROUTER_API_KEY")
-base_url = "https://openrouter.ai/api/v1/chat/completions"
+# دریافت کلید API از متغیرهای محیطی
+api_key = os.getenv("METIS_API_KEY")
+base_url = "https://api.metisai.ir/api/v1/wrapper/openai_chat_completion/chat/completions"
 
 if not api_key:
     st.error("کلید API یافت نشد. لطفاً آن را در متغیرهای محیطی با نام 'OPENROUTER_API_KEY' تنظیم کنید.")
@@ -54,22 +47,28 @@ def extract_text_from_page(page):
     return page.get_text("text").strip()
 
 def translate_text(text, api_key, base_url):
-    """ارسال درخواست ترجمه به API و مدیریت خطاها"""
+    """ارسال درخواست ترجمه به API با ساختار مشابه cURL"""
     payload = {
-        "model": "mistral/ministral-8b",
+        "model": "gpt-3.5-turbo-0125",  # مدل مورد استفاده
         "messages": [
-            {"role": "system", "content": "متن را به فارسی روان ترجمه کن"},
-            {"role": "user", "content": text}
+            {
+                "role": "system",
+                "content": "متن را به فارسی روان ترجمه کن"
+            },
+            {
+                "role": "user",
+                "content": text
+            }
         ],
         "max_tokens": 8000
     }
     headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"  # مشابه Authorization در cURL
     }
     try:
         response = requests.post(base_url, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()  # بررسی وضعیت پاسخ
+        response.raise_for_status()
         result = response.json()
         translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ خطا در دریافت ترجمه.")
     except requests.exceptions.RequestException as e:
@@ -116,4 +115,4 @@ if uploaded_file and bt:
             mime="text/plain"
         )
 
-    pdf_document.close()  # آزادسازی حافظ
+    pdf_document.close()  # آزادسازی حافظه
