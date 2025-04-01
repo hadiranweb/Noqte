@@ -7,7 +7,7 @@ import os
 
 # API configuration
 api_key = os.getenv("METIS_API_KEY")
-base_url = "https://api.metisai.ir/api/v1/wrapper/openai_chat_completion/chat/completions"
+base_url = "https://api.metisai.ir/openai/v1"
 
 # Debug: Check API key
 st.write("API Key in use:", api_key)
@@ -36,7 +36,7 @@ def translate_page(text):
     url = base_url
     headers = {
         "Content-Type": "application/json",
-        "Authorization": api_key  # بدون Bearer
+        "Authorization": api_key
     }
     data = {
         "messages": [
