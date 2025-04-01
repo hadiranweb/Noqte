@@ -38,7 +38,7 @@ def translate_page(text):
     try:
         st.write("Sending request with text:", text[:50] + "..." if len(text) > 50 else text)  # دیباگ
         completion = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
+            model="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
             messages=[
                 {"role": "system", "content": "Translate the text into fluent Persian"},
                 {"role": "user", "content": text}
