@@ -102,4 +102,3 @@ if uploaded_file and bt:
                 file_name="translated.txt",
                 mime="text/plain"
             )
-    pdf_document.close()
