@@ -43,26 +43,19 @@ uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
 bt = st.button("📌 Start Translation")
 
 def translate_page(text):
-    """Translate text using API, exactly matching the cURL structure"""
     url = base_url
     headers = {
-        "Content-Type": "application/json", # Matches -H "Content-Type: application/json"
-        "Authorization": f"Bearer {api_key}" # Matches -H "Authorization: Bearer ..."
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
     }
     data = {
         "messages": [
-            {
-                "role": "system",
-                "content": "Translate the text into fluent Persian" # Matches system message in cURL
-            },
-            {
-                "role": "user",
-                "content": text # Dynamic input instead of static test message
-            }
+            {"role": "system", "content": "Translate the text into fluent Persian"},
+            {"role": "user", "content": text}
         ],
-        "model": "grok-2-latest", # Matches "model": "grok-2-latest"
-        "stream": False, # Matches "stream": false
-        "temperature": 0 # Matches "temperature": 0
+        "model": "grok-2-latest",
+        "stream": False,
+        "temperature": 0
     }
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
@@ -70,17 +63,9 @@ def translate_page(text):
         result = response.json()
         translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
     except requests.exceptions.RequestException as e:
-        try:
-            response = requests.post(url, headers=headers, data=json.dumps(data))
-            response.raise_for_status()
-            result = response.json()
-            st.write("API Response:", result)  # مشاهده جزئیات پاسخ API
-            translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
-        except requests.exceptions.RequestException as e:
-            st.write("⚠ Full Error Response:", e.response.text if e.response else "No response received")
-            translated_text = f"⚠ Server error: {str(e)} - Status Code: {e.response.status_code if e.response else 'No response'}"
+        translated_text = f"⚠ خطای سرور: {str(e)} - کد وضعیت: {e.response.status_code if e.response else 'پاسخی دریافت نشد'}"
         if e.response:
-            st.write("Error Details:", e.response.text) # Debug output
+            st.write("جزئیات خطا:", e.response.text)
     return translated_text
 
 if uploaded_file and bt:
