@@ -70,7 +70,15 @@ def translate_page(text):
  result = response.json()
  translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
  except requests.exceptions.RequestException as e:
- translated_text = f"⚠ Server error: {str(e)} - Status Code: {e.response.status_code if e.response else 'No response'}"
+ try:
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    response.raise_for_status()
+    result = response.json()
+    st.write("API Response:", result)  # مشاهده جزئیات پاسخ API
+    translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
+except requests.exceptions.RequestException as e:
+    st.write("⚠ Full Error Response:", e.response.text if e.response else "No response received")
+    translated_text = f"⚠ Server error: {str(e)} - Status Code: {e.response.status_code if e.response else 'No response'}"
  if e.response:
  st.write("Error Details:", e.response.text) # Debug output
  return translated_text
