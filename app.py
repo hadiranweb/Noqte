@@ -19,7 +19,7 @@ for library in required_libraries:
 
 # API configuration exactly as in cURL
 api_key = os.getenv("METIS_API_KEY") # Default to cURL token if not set
-base_url = "https://api.x.ai/v1/chat/completions"
+base_url = "https://api.metisai.ir/api/v1/wrapper/openai_chat_completion/chat/completions"
 
 if not api_key:
     st.error("API key not found. Please set it in environment variables as 'METIS_API_KEY'.")
