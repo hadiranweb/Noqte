@@ -65,7 +65,9 @@ def translate_page(text):
     except requests.exceptions.RequestException as e:
         translated_text = f"⚠ خطای سرور: {str(e)} - کد وضعیت: {e.response.status_code if e.response else 'پاسخی دریافت نشد'}"
         if e.response:
-            st.write("جزئیات خطا:", e.response.text)
+            st.write("جزئیات پاسخ سرور:", e.response.text)  # باید اینجا چیزی چاپ بشه
+        else:
+            st.write("هیچ پاسخی از سرور دریافت نشد.")
     return translated_text
 
 if uploaded_file and bt:
