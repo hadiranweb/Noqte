@@ -7,6 +7,20 @@ import time
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import subprocess
+import sys
+
+# لیست کتابخانه‌های مورد نیاز
+required_libraries = [
+    "streamlit",
+    "requests",
+    "pymupdf",
+    "python-dotenv"
+]
+
+# نصب کتابخانه‌ها
+for library in required_libraries:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", library])
 
 # دریافت کلید API از متغیر محیطی برای امنیت بیشتر
 api_key = os.getenv("OPENROUTER_API_KEY")
