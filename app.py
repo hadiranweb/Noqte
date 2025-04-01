@@ -2,27 +2,17 @@ import streamlit as st
 import requests
 import json
 from io import BytesIO
-import fitz # PyMuPDF
-import time
+import fitz  # PyMuPDF
 import os
-from dotenv import load_dotenv
-import subprocess
-import sys
 
-# Load environment variables
-load_dotenv()
-
-# Auto-install required libraries
-required_libraries = ["streamlit", "requests", "pymupdf", "python-dotenv"]
-for library in required_libraries:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", library])
-
-# API configuration exactly as in cURL
-api_key = os.getenv("METIS_API_KEY") # Default to cURL token if not set
+# API configuration
+api_key = os.getenv("METIS_API_KEY")
 base_url = "https://api.metisai.ir/api/v1/wrapper/openai_chat_completion/chat/completions"
 
-if not api_key:
-    st.error("API key not found. Please set it in environment variables as 'METIS_API_KEY'.")
+# Debug: Check API key
+st.write("API Key in use:", api_key)
+if not api_key or api_key.strip() == "":
+    st.error("کلید API خالی یا نامعتبر است.")
     st.stop()
 
 # RTL styling for UI
@@ -46,26 +36,28 @@ def translate_page(text):
     url = base_url
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
+        "Authorization": api_key  # بدون Bearer
     }
     data = {
         "messages": [
             {"role": "system", "content": "Translate the text into fluent Persian"},
             {"role": "user", "content": text}
         ],
-        "model": "gpt-4o",
+        "model": "gpt-3.5-turbo-0125",  # مطابق cURL
         "stream": False,
         "temperature": 0
     }
+    st.write("Request data:", data)  # دیباگ
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
         response.raise_for_status()
         result = response.json()
+        st.write("Response:", result)  # دیباگ
         translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
     except requests.exceptions.RequestException as e:
         translated_text = f"⚠ خطای سرور: {str(e)} - کد وضعیت: {e.response.status_code if e.response else 'پاسخی دریافت نشد'}"
         if e.response:
-            st.write("جزئیات پاسخ سرور:", e.response.text)  # باید اینجا چیزی چاپ بشه
+            st.write("جزئیات پاسخ سرور:", e.response.text)
         else:
             st.write("هیچ پاسخی از سرور دریافت نشد.")
     return translated_text
