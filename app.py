@@ -1,10 +1,14 @@
 import streamlit as st
-import requests
-import json
 from io import BytesIO
 import fitz  # PyMuPDF
+from wrapper.metis import wrap
+import requests
+import json
 import os
 from dotenv import load_dotenv
+
+with open("static/style.css", "r") as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 load_dotenv()
 
