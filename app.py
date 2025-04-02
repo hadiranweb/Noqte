@@ -18,10 +18,10 @@ base_url = os.getenv("METIS_BASE_URL")
 def translate(text):
     if not api_key or api_key.strip() == "":
         st.error("کلید API خالی یا نامعتبر است.")
-        return "خطای کلید API
+        return "خطای کلید API"
     if not base_url:
         st.error("آدرس پایه API مشخص نشده")
-        return "خطای آدرس API
+        return "خطای آدرس API"
 
 st.title("📄 PDF Translator (Page by Page)")
 uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
