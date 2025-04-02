@@ -14,12 +14,11 @@ load_dotenv()
 
 api_key = os.getenv("METIS_API_KEY")
 base_url = os.getenv("METIS_BASE_URL")
-
+st.write("API Key in use:", api_key)
 def translate(text):
     if not api_key or api_key.strip() == "":
         st.error("کلید API خالی یا نامعتبر است.")
         return "خطای کلید API"
-        st.write("API Key in use:", api_key)
     if not base_url:
         st.error("آدرس پایه API مشخص نشده")
         return "خطای آدرس API"
