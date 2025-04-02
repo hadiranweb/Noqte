@@ -31,23 +31,21 @@ def translate_page(text):
     url = base_url
     headers = {
         "Content-Type": "application/json",
-        "Authorization": api_key
+        "Authorization": "api_key"
     }
     data = {
+        "model": "gpt-4o",
         "messages": [
             {"role": "system", "content": "Translate the text into fluent Persian"},
             {"role": "user", "content": text}
-        ],
-        "model": "gpt-3.5-turbo-0125",  # مطابق cURL
-        "stream": False,
-        "temperature": 0
+        ]
     }
-    st.write("Request data:", data)  # دیباگ
+    st.write("Request data:", data)
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
         response.raise_for_status()
         result = response.json()
-        st.write("Response:", result)  # دیباگ
+        st.write("Response:", result) 
         translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
     except requests.exceptions.RequestException as e:
         translated_text = f"⚠ خطای سرور: {str(e)} - کد وضعیت: {e.response.status_code if e.response else 'پاسخی دریافت نشد'}"
