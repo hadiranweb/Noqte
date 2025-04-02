@@ -28,8 +28,8 @@ uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
 bt = st.button("📌 Start Translation")
 
 def translate_page(text):
-client = OpenAI(api_key = api_key, base_url = base_url)
-response = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Translate the text into fluent Persian"}, {"role": "user", "content": text}], max_tokens=1000)
+    client = OpenAI(api_key = api_key, base_url = base_url)
+    response = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Translate the text into fluent Persian"}, {"role": "user", "content": text}], max_tokens=1000)
 print(response)
 
     st.write("Request data:", data)
