@@ -4,29 +4,20 @@ import json
 from io import BytesIO
 import fitz  # PyMuPDF
 import os
+from dotenv import load_dotenv
 
-# API configuration
+load_dotenv()
+
 api_key = os.getenv("METIS_API_KEY")
-base_url = "https://api.metisai.ir/openai/v1"
+base_url = os.getenv("METIS_BASE_URL")
 
-# Debug: Check API key
-st.write("API Key in use:", api_key)
-if not api_key or api_key.strip() == "":
-    st.error("کلید API خالی یا نامعتبر است.")
-    st.stop()
-
-# RTL styling for UI
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
-html { direction: rtl; }
-.st-emotion-cache-1fttcpj , .st-emotion-cache-nwtri { display: none; }
-.st-emotion-cache-5rimss p { text-align: right; font-family: 'DM Sans', sans-serif, 'Noto Sans Arabic', sans-serif; }
-pre { text-align: left; }
-h1, h2, h3, h4, h5, h6 { font-family: 'Noto Sans Arabic', sans-serif; }
-span, p, a, button, ol, li { text-align: right; font-family: 'DM Sans', sans-serif, 'Noto Sans Arabic', sans-serif; }
-</style>
-""", unsafe_allow_html=True)
+def translate(text):
+    if not api_key or api_key.strip() == "":
+        st.error("کلید API خالی یا نامعتبر است.")
+        return "خطای کلید API
+    if not base_url:
+        st.error("آدرس پایه API مشخص نشده")
+        return "خطای آدرس API
 
 st.title("📄 PDF Translator (Page by Page)")
 uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
