@@ -1,7 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
-from wrapper.metis import wrap
+
 import requests
 import json
 import os
