@@ -15,6 +15,7 @@ load_dotenv()
 api_key = os.getenv("METIS_API_KEY")
 base_url = os.getenv("METIS_BASE_URL")
 st.write("API Key in use:", api_key)
+
 def translate(text):
     if not api_key or api_key.strip() == "":
         st.error("کلید API خالی یا نامعتبر است.")
@@ -23,21 +24,24 @@ def translate(text):
         st.error("آدرس پایه API مشخص نشده")
         return "خطای آدرس API"
 
-st.title("📄 PDF Translator (Page by Page)")
-uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
-bt = st.button("📌 Start Translation")
+    url = f"{base_url}/api/v1/wrapper/openai_chat_completion/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "gpt-4",
+        "messages": [
+            {"role": "system", "content": "Translate the text into fluent Persian"},
+            {"role": "user", "content": text}
+        ],
+        "max_tokens": 1000
+    }
 
-def translate_page(text):
-    client = OpenAI(api_key = api_key, base_url = base_url)
-    response = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Translate the text into fluent Persian"}, {"role": "user", "content": text}], max_tokens=1000)
-    print(response)
-
-st.write("Request data:", data)
     try:
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
         result = response.json()
-        st.write("Response:", result) 
         translated_text = result.get("choices", [{}])[0].get("message", {}).get("content", "⚠ Error retrieving translation.")
     except requests.exceptions.RequestException as e:
         translated_text = f"⚠ خطای سرور: {str(e)} - کد وضعیت: {e.response.status_code if e.response else 'پاسخی دریافت نشد'}"
@@ -46,6 +50,10 @@ st.write("Request data:", data)
         else:
             st.write("هیچ پاسخی از سرور دریافت نشد.")
     return translated_text
+
+st.title("📄 PDF Translator (Page by Page)")
+uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
+bt = st.button("📌 Start Translation")
 
 if uploaded_file and bt:
     with fitz.open(stream=uploaded_file.read(), filetype="pdf") as pdf_document:
@@ -61,7 +69,7 @@ if uploaded_file and bt:
             if not text:
                 translated_text = "⚠ این صفحه خالی است."
             else:
-                translated_text = translate_page(text)
+                translated_text = translate(text)
             translated_pages.append(f"📄 **صفحه {page_num + 1}:**\n\n{translated_text}")
             
             with st.expander(f"📜 صفحه {page_num + 1}"):
