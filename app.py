@@ -1,7 +1,7 @@
 import streamlit as st
 from io import BytesIO
 import fitz  # PyMuPDF
-
+from openai import OpenAI
 import requests
 import json
 import os
@@ -28,18 +28,10 @@ uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
 bt = st.button("📌 Start Translation")
 
 def translate_page(text):
-    url = base_url
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": "api_key"
-    }
-    data = {
-        "model": "gpt-4o",
-        "messages": [
-            {"role": "system", "content": "Translate the text into fluent Persian"},
-            {"role": "user", "content": text}
-        ]
-    }
+client = OpenAI(api_key = api_key, base_url = base_url)
+response = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Translate the text into fluent Persian"}, {"role": "user", "content": text}], max_tokens=1000)
+print(response)
+
     st.write("Request data:", data)
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
