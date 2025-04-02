@@ -30,9 +30,9 @@ bt = st.button("📌 Start Translation")
 def translate_page(text):
     client = OpenAI(api_key = api_key, base_url = base_url)
     response = client.chat.completions.create(model="gpt-4o", messages=[{"role": "system", "content": "Translate the text into fluent Persian"}, {"role": "user", "content": text}], max_tokens=1000)
-print(response)
+    print(response)
 
-    st.write("Request data:", data)
+st.write("Request data:", data)
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data))
         response.raise_for_status()
