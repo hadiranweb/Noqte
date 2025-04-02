@@ -24,7 +24,7 @@ def translate(text):
         st.error("آدرس پایه API مشخص نشده")
         return "خطای آدرس API"
 
-    url = f"{base_url}/api/v1/wrapper/openai_chat_completion/chat/completions"
+    url = "https://api.metisai.ir/openai/v1"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
