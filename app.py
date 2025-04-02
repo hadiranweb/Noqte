@@ -40,9 +40,9 @@ def translate(text):
     
     return translated_text
 
-st.title("📄 PDF Translator (Page by Page)")
-uploaded_file = st.file_uploader("Upload your PDF file:", type="pdf")
-bt = st.button("📌 Start Translation")
+st.title("بدون محدودیت ترجمه کن(صفحه‌به‌صفحه)")
+uploaded_file = st.file_uploader("by hadiranweb:", type="pdf")
+bt = st.button("شروع (تا پایان ترجمه صبر کنید)")
 
 if uploaded_file and bt:
     with fitz.open(stream=uploaded_file.read(), filetype="pdf") as pdf_document:
