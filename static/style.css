@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&family=Noto+Sans+Arabic:wght@500&display=swap');
+html {
+    direction: rtl;
+}
+
+.st-emotion-cache-1fttcpj , .st-emotion-cache-nwtri {
+    display: none;
+}
+
+.st-emotion-cache-5rimss p {
+    text-align: right;
+    font-family: 'DM Sans', sans-serif, 'Noto Sans Arabic', sans-serif;
+}
+
+pre {
+    text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+span, p, a, button, ol, li {
+    text-align: right;
+    font-family: 'DM Sans', sans-serif, 'Noto Sans Arabic', sans-serif;
+}
