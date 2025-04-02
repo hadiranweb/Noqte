@@ -40,7 +40,7 @@ def translate(text):
     
     return translated_text
 
-st.title("بدون محدودیت ترجمه کن(صفحه‌به‌صفحه)")
+st.title("بدون محدودیت ترجمه کن (صفحه‌به‌صفحه)")
 uploaded_file = st.file_uploader("by hadiranweb:", type="pdf")
 bt = st.button("شروع (تا پایان ترجمه صبر کنید)")
 
