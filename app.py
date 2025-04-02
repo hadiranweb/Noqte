@@ -42,7 +42,7 @@ def translate(text):
 
 st.title("بدون محدودیت ترجمه کن (صفحه‌به‌صفحه)")
 uploaded_file = st.file_uploader("by hadiranweb:", type="pdf")
-bt = st.button("شروع (تا پایان ترجمه صبر کنید)")
+bt = st.button("آتش;)")
 
 if uploaded_file and bt:
     with fitz.open(stream=uploaded_file.read(), filetype="pdf") as pdf_document:
